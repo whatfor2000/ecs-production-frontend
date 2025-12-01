@@ -3,7 +3,7 @@ import {
   Box, Typography, Avatar, Paper,
   LinearProgress, Grid, Button // <<-- Import Button
 } from '@mui/material';
-import Cookies from 'js-cookie';
+//import Cookies from 'js-cookie';
 import ImageDialog from '../components/ImageDialog';
 
 interface UserProfile {
