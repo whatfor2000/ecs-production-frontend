@@ -79,7 +79,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
 
           // ส่ง token ไป backend เพื่อสร้าง subscription
           try {
-            const res = await fetch("http://localhost:3000/subscriptions/subscribe", {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/subscribe`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -103,7 +103,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
     if (paymentMethod === "promptpay") {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:3000/omise/promptpay", {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/omise/promptpay`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount }),

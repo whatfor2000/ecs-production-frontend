@@ -30,7 +30,7 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     formData.append('transcript', '');
 
     try {
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -92,14 +92,14 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
           textAlign: 'center',
         }}
       >
-       <Typography
-               sx={{
-                 fontSize:"1.4rem",
-                 fontWeight: 'bold',
-                 color: '#fff',
-                 fontFamily: 'Bebas Neue',
-                 textAlign: 'start',
-               }}
+        <Typography
+          sx={{
+            fontSize: "1.4rem",
+            fontWeight: 'bold',
+            color: '#fff',
+            fontFamily: 'Bebas Neue',
+            textAlign: 'start',
+          }}
         >
           Upload & Play Audio (Only Thai language is supported)
         </Typography>
