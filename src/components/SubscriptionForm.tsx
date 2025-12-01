@@ -14,7 +14,7 @@ import {
   ToggleButton,
 } from "@mui/material";
 
-import Cookies from "js-cookie";
+
 
 declare global {
   interface Window {
@@ -81,9 +81,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
           try {
             const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/subscribe`, {
               method: "POST",
+              credentials: "include",
               headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${Cookies.get('access_token')}`
+                "Content-Type": "application/json"
               },
               body: JSON.stringify({ token, amount, planId }),
             });

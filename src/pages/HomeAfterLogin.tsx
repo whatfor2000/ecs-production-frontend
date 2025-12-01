@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import axios from "axios";
 import {
   Box,
@@ -51,13 +50,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const token = Cookies.get("access_token");
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+        // Token is sent automatically via cookies
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
           credentials: "include",
         });
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
@@ -79,7 +73,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchImages() {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`, {
+          withCredentials: true
+        });
         setImages(res.data);
 
         const initialLikes: { [key: string]: boolean } = {};
@@ -105,6 +101,8 @@ const Home: React.FC = () => {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         userId: user.id,
         imageId,
+      }, {
+        withCredentials: true
       });
 
       setLikes((prev) => ({ ...prev, [imageId]: res.data.liked }));

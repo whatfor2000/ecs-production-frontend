@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 
 // NOTE: This component assumes that Material-UI and a custom font like 'Bebas Neue'
 // are loaded in your main application's HTML file or theme configuration.
@@ -27,7 +26,7 @@ const theme = createTheme({
 });
 
 const Login = () => {
-    const [, setCookie] = useCookies(['access_token']);
+    // Cookie will be set by backend via Set-Cookie header
     const navigate = useNavigate()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -47,6 +46,7 @@ const Login = () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -58,8 +58,7 @@ const Login = () => {
             if (response.ok) {
                 if (data.success) {
                     console.log(data);
-                    // sessionStorage.setItem("access_token", data.access_token);
-                    setCookie('access_token', data.access_token,);
+                    // Cookie is automatically set by backend via Set-Cookie header
                     setMessage('Login successful!');
                     // You would typically redirect the user here or update state
                     setTimeout(() => {

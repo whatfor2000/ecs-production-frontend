@@ -38,13 +38,12 @@ const ProfilePage: React.FC = () => {
   // 1. สถานะ Anonymous Toggle
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-  const token = Cookies.get('access_token');
+  // Token is sent automatically via cookies
 
   useEffect(() => {
     async function fetchProfile() {
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
           credentials: 'include'
         });
         const data = await res.json();
@@ -60,7 +59,6 @@ const ProfilePage: React.FC = () => {
     async function fetchImages() {
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/me`, {
-          headers: { Authorization: `Bearer ${token}` },
           credentials: 'include'
         });
         const data = await res.json();
@@ -79,7 +77,7 @@ const ProfilePage: React.FC = () => {
     }
 
     fetchProfile().then(fetchImages);
-  }, [token, user?.id]);
+  }, [user?.id]);
 
   const toggleLike = async (imageId: string) => {
     if (!user?.id) return alert('You must login first!');
@@ -87,7 +85,8 @@ const ProfilePage: React.FC = () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, imageId })
       });
       const data = await res.json();
@@ -102,7 +101,7 @@ const ProfilePage: React.FC = () => {
     try {
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/${imageId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
       });
       setImages(prev => prev.filter(img => img.id !== imageId));
       if (selectedImage?.id === imageId) setOpenModal(false);
