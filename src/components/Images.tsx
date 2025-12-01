@@ -1,7 +1,5 @@
-import { Typography, Button, IconButton, Box } from "@mui/material"; // เพิ่ม IconButton
-import FavoriteIcon from "@mui/icons-material/Favorite"; // เพิ่ม Icon
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"; // เพิ่ม Icon
-import React, { useRef, useState } from "react";
+import { Typography } from "@mui/material";
+import React, { useRef } from "react";
 
 interface ImageProps {
   src: string;

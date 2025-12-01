@@ -81,10 +81,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
           try {
             const res = await fetch("http://localhost:3000/subscriptions/subscribe", {
               method: "POST",
-              headers: { 
+              headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${Cookies.get('access_token')}`
-               },
+              },
               body: JSON.stringify({ token, amount, planId }),
             });
 
@@ -155,14 +155,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
                 <FormControl fullWidth margin="normal">
                   <TextField id="number" label="Card Number" required />
                 </FormControl>
-                <Grid container component="div" spacing={2}>
-                  <Grid item component="div" xs={4}>
+                <Grid container spacing={2}>
+                  <Grid size={4}>
                     <TextField id="exp_month" label="MM" required />
                   </Grid>
-                  <Grid item component="div" xs={4}>
+                  <Grid size={4}>
                     <TextField id="exp_year" label="YY" required />
                   </Grid>
-                  <Grid item component="div" xs={4}>
+                  <Grid size={4}>
                     <TextField id="cvc" label="CVC" required />
                   </Grid>
                 </Grid>

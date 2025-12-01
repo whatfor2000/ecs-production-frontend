@@ -114,11 +114,11 @@ const Home: React.FC = () => {
         prevImages.map((img) =>
           img.id === imageId
             ? {
-                ...img,
-                likes: res.data.liked
-                  ? [...img.likes, { userId: user.id }]
-                  : img.likes.filter((l) => l.userId !== user.id),
-              }
+              ...img,
+              likes: res.data.liked
+                ? [...img.likes, { userId: user.id }]
+                : img.likes.filter((l) => l.userId !== user.id),
+            }
             : img
         )
       );
@@ -154,12 +154,8 @@ const Home: React.FC = () => {
       <Grid container spacing={4} sx={{ paddingX: { xs: 2, sm: 5, md: "10vw" } }}>
         {images.map((img) => (
           <Grid
-            item
             key={img.id}
-            xs={12}
-            sm={6}
-            md={3}
-            lg={2.4}
+            size={{ xs: 12, sm: 6, md: 3, lg: 2.4 }}
             sx={{ display: "flex", justifyContent: "center" }}
           >
             <Box

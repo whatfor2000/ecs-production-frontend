@@ -34,10 +34,10 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
       const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' })
       const url = URL.createObjectURL(audioBlob)
       setAudioURL(url)
-      console.log("url",url)
+      console.log("url", url)
 
       // แปลงเป็น WAV ก่อนส่งไปยัง API
-      const wavBlob = await convertToWav(audioBlob)
+      // const wavBlob = await convertToWav(audioBlob)
       // const response = await fetch(url, {
       //   method: 'POST',
       //   body: wavBlob,
@@ -89,7 +89,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     // สร้าง buffer WAV
     const wavHeader = new ArrayBuffer(44)
     const view = new DataView(wavHeader)
- 
+
 
     // กำหนด header สำหรับไฟล์ WAV
     writeString(view, 0, 'RIFF')
@@ -129,39 +129,39 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
 
   // handleUpload ฟังก์ชันที่ส่งข้อมูลไปยัง API
   // handleUpload ฟังก์ชันที่ส่งข้อมูลไปยัง API
-const handleUpload = async () => {
-  if (!audioURL) {
-    alert('Please record an audio first.')
-    return
-  }
-
-  const formData = new FormData()
-  const wavBlob = await convertToWav(audioChunks.current[0]) // แปลงไฟล์เป็น .wav
-  formData.append('file', wavBlob, 'recording.wav') // ส่งไฟล์ WAV แทนที่ .webm
-  formData.append('transcript', liveScript)
-
-  try {
-    const response = await fetch('http://localhost:5000/upload', {
-      method: 'POST',
-      body: formData,
-    })
-
-    const data = await response.json()
-    console.log('Response:', data)
-
-    if (response.ok) {
-      alert('Upload Success!')
-      console.log("After Upload Success:",data)
-      onResult(data) // ส่งผลลัพธ์กลับไปยัง Function
-      setLiveScript(data.transcript) // Update live script with transcript from response
-    } else {
-      alert(`Upload failed: ${data.error}`)
+  const handleUpload = async () => {
+    if (!audioURL) {
+      alert('Please record an audio first.')
+      return
     }
-  } catch (error) {
-    console.error('Error uploading file:', error)
-    alert('Upload failed: network or server error.')
+
+    const formData = new FormData()
+    const wavBlob = await convertToWav(audioChunks.current[0]) // แปลงไฟล์เป็น .wav
+    formData.append('file', wavBlob, 'recording.wav') // ส่งไฟล์ WAV แทนที่ .webm
+    formData.append('transcript', liveScript)
+
+    try {
+      const response = await fetch('http://localhost:5000/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+      console.log('Response:', data)
+
+      if (response.ok) {
+        alert('Upload Success!')
+        console.log("After Upload Success:", data)
+        onResult(data) // ส่งผลลัพธ์กลับไปยัง Function
+        setLiveScript(data.transcript) // Update live script with transcript from response
+      } else {
+        alert(`Upload failed: ${data.error}`)
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error)
+      alert('Upload failed: network or server error.')
+    }
   }
-}
 
 
   const ButtonStyle = {
@@ -196,14 +196,14 @@ const handleUpload = async () => {
           borderRadius: 4,
           width: '100%',
           backgroundColor: '#ffffff10',
-          
+
           backdropFilter: 'blur(10px)',
           textAlign: 'center',
         }}
       >
         <Typography
           sx={{
-            fontSize:"1.4rem",
+            fontSize: "1.4rem",
             fontWeight: 'bold',
             color: '#fff',
             fontFamily: 'Bebas Neue',
@@ -297,36 +297,36 @@ const handleUpload = async () => {
       </Paper>
 
       <Box sx={{
-              backgroundColor: 'rgb(255,255,255,0.8)',
-              width: "100%",
-              mt: 2,
-              borderRadius: 4,
-              padding: 2,
-              textAlign: 'start',
-              backdropFilter: 'blur(10px)',
-            }}>
-              <Typography
-                sx={{
-                  fontSize: "1.5rem",
-                  fontWeight: 'bold',
-                  color: '#000',
-                  fontFamily: 'Bebas Neue',
-                  textAlign: 'start',
-                }}
-              >
-                Live Script
-              </Typography>
-              <Typography variant="h6" sx={{
-                fontFamily: 'Bebas Neue',
-                height: '200px',
-                width: '100%',
-                overflowY: 'auto',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-              }}>
-                {liveScript || 'No transcript available yet.'}
-              </Typography>
-            </Box>
+        backgroundColor: 'rgb(255,255,255,0.8)',
+        width: "100%",
+        mt: 2,
+        borderRadius: 4,
+        padding: 2,
+        textAlign: 'start',
+        backdropFilter: 'blur(10px)',
+      }}>
+        <Typography
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: 'bold',
+            color: '#000',
+            fontFamily: 'Bebas Neue',
+            textAlign: 'start',
+          }}
+        >
+          Live Script
+        </Typography>
+        <Typography variant="h6" sx={{
+          fontFamily: 'Bebas Neue',
+          height: '200px',
+          width: '100%',
+          overflowY: 'auto',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+        }}>
+          {liveScript || 'No transcript available yet.'}
+        </Typography>
+      </Box>
     </Box>
   )
 }
