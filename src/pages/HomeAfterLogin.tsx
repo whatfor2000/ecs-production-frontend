@@ -54,20 +54,36 @@ const Home: React.FC = () => {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
           credentials: "include",
         });
-        if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
+
+        if (res.status === 401) {
+          console.error("Unauthorized: Cookie not found or invalid");
+          console.log("Current cookies:", document.cookie);
+          alert("Session expired or invalid. Please login again.");
+          navigate("/login");
+          return;
+        }
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          console.error(`Failed to fetch user: ${res.status}`, errorData);
+          throw new Error(`Failed to fetch user: ${res.status}`);
+        }
+
         const data = await res.json();
+        console.log("User profile fetched successfully:", data);
         setUser({
           ...data,
           maxGenerate: data.planId === "subscription" ? 50 : 2,
         });
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching user profile:", err);
+        // Don't redirect on network errors, only on auth errors
       } finally {
         setLoading(false);
       }
     }
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   // Fetch images
   useEffect(() => {
