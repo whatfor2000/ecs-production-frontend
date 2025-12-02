@@ -20,7 +20,6 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import ShareIcon from "@mui/icons-material/Share";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
 
 interface User {
   id: string;
@@ -54,9 +53,6 @@ const Home: React.FC = () => {
         // Token is sent automatically via cookies
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
           credentials: "include",
-          headers: {
-            "Authorization": `Bearer ${Cookies.get("token")}`,
-          },
         });
 
         if (res.status === 401) {

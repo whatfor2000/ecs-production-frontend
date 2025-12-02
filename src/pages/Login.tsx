@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 
 // NOTE: This component assumes that Material-UI and a custom font like 'Bebas Neue'
 // are loaded in your main application's HTML file or theme configuration.
@@ -50,7 +49,6 @@ const Login = () => {
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${Cookies.get("token")}`,
                 },
                 body: JSON.stringify({ email, password }),
             });
