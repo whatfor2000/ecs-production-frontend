@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     async function fetchUser() {
       try {
         // Token is sent automatically via cookies
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
           credentials: "include",
         });
 
