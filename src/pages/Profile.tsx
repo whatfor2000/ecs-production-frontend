@@ -43,7 +43,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
           credentials: 'include'
         });
         const data = await res.json();
