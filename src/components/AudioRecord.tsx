@@ -141,7 +141,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     formData.append('transcript', liveScript)
 
     try {
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/upload`, {
         method: 'POST',
         body: formData,
       })
