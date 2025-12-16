@@ -53,6 +53,7 @@ const Home: React.FC = () => {
         // Token is sent automatically via cookies
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
           credentials: "include",
+          
         });
 
         if (res.status === 401) {
