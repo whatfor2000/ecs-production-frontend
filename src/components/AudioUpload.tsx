@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Paper } from '@mui/material'
+import { Box, Typography, Button, Paper, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
 
 type Props = {
@@ -8,6 +8,7 @@ type Props = {
 
 const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
   const [audioSrc, setAudioSrc] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [liveScript, setLiveScript] = useState<string>('')
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +31,7 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     formData.append('transcript', '');
 
     try {
+      setIsLoading(true)
       const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
         method: 'POST',
         body: formData,
@@ -49,6 +51,8 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Upload failed: network or server error.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -126,8 +130,16 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
                 }
               }}
               onClick={handleUpload}
+              disabled={isLoading}
             >
-              🎵Analysis File
+              {isLoading ? (
+                <>
+                  <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
+                  Analyzing...
+                </>
+              ) : (
+                '🎵Analysis File'
+              )}
             </Button>
           )}
         </Box>

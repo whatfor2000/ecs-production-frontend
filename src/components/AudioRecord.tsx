@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Box, Button, Paper, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material'
 
 interface AudioRecorderProps {
   onResult: (data: unknown) => void; // เพิ่ม prop นี้เพื่อส่งค่าผลลัพธ์กลับ
@@ -9,6 +9,7 @@ interface AudioRecorderProps {
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [liveScript, setLiveScript] = useState<string>('')  // จัดเก็บ liveScript
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunks = useRef<Blob[]>([])
@@ -141,6 +142,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     formData.append('transcript', liveScript)
 
     try {
+      setIsLoading(true)
       const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
         method: 'POST',
         body: formData,
@@ -160,6 +162,8 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     } catch (error) {
       console.error('Error uploading file:', error)
       alert('Upload failed: network or server error.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -288,8 +292,16 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
                   }
                 }}
                 onClick={handleUpload}
+                disabled={isLoading}
               >
-                🎵Analysis Record
+                {isLoading ? (
+                  <>
+                    <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
+                    Analyzing...
+                  </>
+                ) : (
+                  '🎵Analysis Record'
+                )}
               </Button>
             </Box>
           </>
