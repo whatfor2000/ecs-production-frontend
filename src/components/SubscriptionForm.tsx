@@ -248,7 +248,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
                   />
                 </FormControl>
                 <Grid container component="div" spacing={2}>
-                  <Grid item component="div" xs={4}>
+                  <Grid component="div" size={{ xs: 4 }}>
                     <TextField 
                       id="exp_month" 
                       label="MM" 
@@ -276,7 +276,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
                       }}
                     />
                   </Grid>
-                  <Grid item component="div" xs={4}>
+                  <Grid component="div" size={{ xs: 4 }}>
                     <TextField 
                       id="exp_year" 
                       label="YY" 
@@ -304,7 +304,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
                       }}
                     />
                   </Grid>
-                  <Grid item component="div" xs={4}>
+                  <Grid component="div" size={{ xs: 4 }}>
                     <TextField 
                       id="cvc" 
                       label="CVC" 
