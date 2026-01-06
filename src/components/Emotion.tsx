@@ -3,8 +3,8 @@ import { Box, Typography, LinearProgress } from '@mui/material'
 
 interface EmotionBarProps {
   emotion: string
-  value: number // ค่าระหว่าง 0 - 100
-  color?: string // ยังใช้ได้ ถ้าไม่มี gradient
+  value: number // Value between 0 - 100
+  color?: string // Still usable if no gradient
   emoji?: string
 }
 
@@ -52,7 +52,7 @@ const EmotionBar: React.FC<EmotionBarProps> = ({ emotion, value, color, emoji })
             borderRadius: 7,
             backgroundColor: 'rgba(0,0,0,0.1)',
             '& .MuiLinearProgress-bar': {
-              backgroundImage: `linear-gradient(to right, #00c6ff, #0072ff)`, // gradient สีฟ้า → น้ำเงิน
+              backgroundImage: `linear-gradient(to right, #00c6ff, #0072ff)`, // Blue gradient
               borderRadius: 7,
               transition: 'width 0.3s ease-in-out',
             },

@@ -1,16 +1,15 @@
 import React, { useRef, useState } from 'react'
-import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material'
+import { Box, Button, Paper, Typography } from '@mui/material'
 
 interface AudioRecorderProps {
-  onResult: (data: unknown) => void; // เพิ่ม prop นี้เพื่อส่งค่าผลลัพธ์กลับ
+  onResult: (data: unknown) => void; // Add this prop to send result back
   disabled?: boolean
 }
 
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [audioURL, setAudioURL] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [liveScript, setLiveScript] = useState<string>('')  // จัดเก็บ liveScript
+  const [liveScript, setLiveScript] = useState<string>('')  // Store liveScript
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunks = useRef<Blob[]>([])
 
@@ -35,16 +34,10 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
       const audioBlob = new Blob(audioChunks.current, { type: 'audio/webm' })
       const url = URL.createObjectURL(audioBlob)
       setAudioURL(url)
-      console.log("url", url)
 
-      // แปลงเป็น WAV ก่อนส่งไปยัง API
-      // const wavBlob = await convertToWav(audioBlob)
-      // const response = await fetch(url, {
-      //   method: 'POST',
-      //   body: wavBlob,
-      // })
-      // const data = await response.json()
-      // console.log('Response:', data)
+      // Convert to WAV before sending to API
+      const wavBlob = await convertToWav(audioBlob)
+      onResult({ audioBlob: wavBlob, url }); // Send WAV file back
 
     }
 
@@ -57,7 +50,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     setIsRecording(false)
   }
 
-  // ฟังก์ชันแปลงจาก .webm เป็น .wav
+  // Function to convert from .webm to .wav
   const convertToWav = (audioBlob: Blob): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -72,7 +65,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
         bufferSource.start(0)
 
         offlineContext.startRendering().then((renderedBuffer) => {
-          const wavBlob = audioBufferToWav(renderedBuffer)  // แปลงเป็น WAV
+          const wavBlob = audioBufferToWav(renderedBuffer)  // Convert to WAV
           resolve(wavBlob)
         })
       }
@@ -81,18 +74,18 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     })
   }
 
-  // ฟังก์ชันแปลง AudioBuffer เป็น WAV
+  // Function to convert AudioBuffer to WAV
   const audioBufferToWav = (audioBuffer: AudioBuffer): Blob => {
     const numChannels = audioBuffer.numberOfChannels
     const sampleRate = audioBuffer.sampleRate
     const bufferLength = audioBuffer.length
 
-    // สร้าง buffer WAV
+    // Create WAV buffer
     const wavHeader = new ArrayBuffer(44)
     const view = new DataView(wavHeader)
+ 
 
-
-    // กำหนด header สำหรับไฟล์ WAV
+    // Set header for WAV file
     writeString(view, 0, 'RIFF')
     view.setUint32(4, 36 + bufferLength * numChannels * 2, true)
     writeString(view, 8, 'WAVE')
@@ -107,7 +100,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     writeString(view, 36, 'data')
     view.setUint32(40, bufferLength * numChannels * 2, true)
 
-    // สร้าง data buffer
+    // Create data buffer
     const pcmData = new Int16Array(bufferLength * numChannels)
     let offset = 0
     for (let channel = 0; channel < numChannels; channel++) {
@@ -117,7 +110,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
       }
     }
 
-    // สร้างไฟล์ Blob ที่เป็น WAV
+    // Create WAV Blob file
     const wavData = new Blob([wavHeader, pcmData], { type: 'audio/wav' })
     return wavData
   }
@@ -128,44 +121,39 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
     }
   }
 
-  // handleUpload ฟังก์ชันที่ส่งข้อมูลไปยัง API
-  // handleUpload ฟังก์ชันที่ส่งข้อมูลไปยัง API
-  const handleUpload = async () => {
-    if (!audioURL) {
-      alert('Please record an audio first.')
-      return
-    }
-
-    const formData = new FormData()
-    const wavBlob = await convertToWav(audioChunks.current[0]) // แปลงไฟล์เป็น .wav
-    formData.append('file', wavBlob, 'recording.wav') // ส่งไฟล์ WAV แทนที่ .webm
-    formData.append('transcript', liveScript)
-
-    try {
-      setIsLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-      console.log('Response:', data)
-
-      if (response.ok) {
-        alert('Upload Success!')
-        console.log("After Upload Success:", data)
-        onResult(data) // ส่งผลลัพธ์กลับไปยัง Function
-        setLiveScript(data.transcript) // Update live script with transcript from response
-      } else {
-        alert(`Upload failed: ${data.error}`)
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error)
-      alert('Upload failed: network or server error.')
-    } finally {
-      setIsLoading(false)
-    }
+  // handleUpload function that sends data to API
+const handleUpload = async () => {
+  if (!audioURL) {
+    alert('Please record an audio first.')
+    return
   }
+
+  const formData = new FormData()
+  const wavBlob = await convertToWav(audioChunks.current[0]) // Convert file to .wav
+  formData.append('file', wavBlob, 'recording.wav') // Send WAV file instead of .webm
+  formData.append('transcript', liveScript)
+
+  try {
+    const response = await fetch('http://localhost:5000/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+    console.log('Response:', data)
+
+    if (response.ok) {
+      alert('Upload Success!')
+      onResult(data) // Send result back to Function
+      setLiveScript(data.transcript) // Update live script with transcript from response
+    } else {
+      alert(`Upload failed: ${data.error}`)
+    }
+  } catch (error) {
+    console.error('Error uploading file:', error)
+    alert('Upload failed: network or server error.')
+  }
+}
 
 
   const ButtonStyle = {
@@ -200,14 +188,14 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
           borderRadius: 4,
           width: '100%',
           backgroundColor: '#ffffff10',
-
+          
           backdropFilter: 'blur(10px)',
           textAlign: 'center',
         }}
       >
         <Typography
           sx={{
-            fontSize: "1.4rem",
+            fontSize:"1.4rem",
             fontWeight: 'bold',
             color: '#fff',
             fontFamily: 'Bebas Neue',
@@ -292,16 +280,8 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
                   }
                 }}
                 onClick={handleUpload}
-                disabled={isLoading}
               >
-                {isLoading ? (
-                  <>
-                    <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
-                    Analyzing...
-                  </>
-                ) : (
-                  '🎵Analysis Record'
-                )}
+                🎵Analysis Record
               </Button>
             </Box>
           </>
@@ -309,36 +289,36 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onResult, disabled }) => 
       </Paper>
 
       <Box sx={{
-        backgroundColor: 'rgb(255,255,255,0.8)',
-        width: "100%",
-        mt: 2,
-        borderRadius: 4,
-        padding: 2,
-        textAlign: 'start',
-        backdropFilter: 'blur(10px)',
-      }}>
-        <Typography
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: 'bold',
-            color: '#000',
-            fontFamily: 'Bebas Neue',
-            textAlign: 'start',
-          }}
-        >
-          Live Script
-        </Typography>
-        <Typography variant="h6" sx={{
-          fontFamily: 'Bebas Neue',
-          height: '200px',
-          width: '100%',
-          overflowY: 'auto',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-        }}>
-          {liveScript || 'No transcript available yet.'}
-        </Typography>
-      </Box>
+              backgroundColor: 'rgb(255,255,255,0.8)',
+              width: "100%",
+              mt: 2,
+              borderRadius: 4,
+              padding: 2,
+              textAlign: 'start',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <Typography
+                sx={{
+                  fontSize: "1.5rem",
+                  fontWeight: 'bold',
+                  color: '#000',
+                  fontFamily: 'Bebas Neue',
+                  textAlign: 'start',
+                }}
+              >
+                Live Script
+              </Typography>
+              <Typography variant="h6" sx={{
+                fontFamily: 'Bebas Neue',
+                height: '200px',
+                width: '100%',
+                overflowY: 'auto',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}>
+                {liveScript || 'No transcript available yet.'}
+              </Typography>
+            </Box>
     </Box>
   )
 }

@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Paper, CircularProgress } from '@mui/material'
+import { Box, Typography, Button, Paper } from '@mui/material'
 import React, { useState } from 'react'
 
 type Props = {
@@ -8,7 +8,6 @@ type Props = {
 
 const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
   const [audioSrc, setAudioSrc] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [liveScript, setLiveScript] = useState<string>('')
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,8 +30,7 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     formData.append('transcript', '');
 
     try {
-      setIsLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
+      const response = await fetch('http://localhost:5000/upload', {
         method: 'POST',
         body: formData,
       });
@@ -43,7 +41,7 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
 
       if (response.ok) {
         alert('Upload Success!');
-        onResult(data); // 🔥 ส่งผลลัพธ์กลับไปยัง Function
+        onResult(data); // 🔥 Send result back to Function
         setLiveScript(data.transcript);  // Update live script with transcript from response
       } else {
         alert(`Upload failed: ${data.error}`);
@@ -51,8 +49,6 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Upload failed: network or server error.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -96,14 +92,14 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
           textAlign: 'center',
         }}
       >
-        <Typography
-          sx={{
-            fontSize: "1.4rem",
-            fontWeight: 'bold',
-            color: '#fff',
-            fontFamily: 'Bebas Neue',
-            textAlign: 'start',
-          }}
+       <Typography
+               sx={{
+                 fontSize:"1.4rem",
+                 fontWeight: 'bold',
+                 color: '#fff',
+                 fontFamily: 'Bebas Neue',
+                 textAlign: 'start',
+               }}
         >
           Upload & Play Audio (Only Thai language is supported)
         </Typography>
@@ -130,16 +126,8 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
                 }
               }}
               onClick={handleUpload}
-              disabled={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
-                  Analyzing...
-                </>
-              ) : (
-                '🎵Analysis File'
-              )}
+              🎵Analysis File
             </Button>
           )}
         </Box>

@@ -14,7 +14,7 @@ import {
   ToggleButton,
 } from "@mui/material";
 
-
+import Cookies from "js-cookie";
 
 declare global {
   interface Window {
@@ -33,7 +33,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
   const [loading, setLoading] = useState(false);
   const [omiseLoaded, setOmiseLoaded] = useState(false);
 
-  // ✅ โหลด Omise.js และตั้งค่า Public Key จาก .env
+  // ✅ Load Omise.js and set Public Key from .env
   const handleScriptLoad = () => {
     const Omise = window.Omise;
     if (!Omise) {
@@ -52,7 +52,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
     console.log("✅ Omise.js loaded successfully with key:", publicKey);
   };
 
-  // ✅ เมื่อกด Submit
+  // ✅ When Submit is clicked
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -77,14 +77,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
           const token = response.id;
           console.log("✅ Card Token Created:", token);
 
-          // ส่ง token ไป backend เพื่อสร้าง subscription
+          // Send token to backend to create subscription
           try {
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/subscribe`, {
+            const res = await fetch("http://localhost:3000/subscriptions/subscribe", {
               method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json"
-              },
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${Cookies.get('access_token')}`
+               },
               body: JSON.stringify({ token, amount, planId }),
             });
 
@@ -103,9 +103,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
     if (paymentMethod === "promptpay") {
       setLoading(true);
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/omise/promptpay`, {
+        const res = await fetch("http://localhost:3000/omise/promptpay", {
           method: "POST",
-          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount }),
         });
@@ -120,29 +119,71 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+    <Box>
       <Script url="https://cdn.omise.co/omise.js" onLoad={handleScriptLoad} />
 
-      <Card sx={{ maxWidth: 480, width: "100%", p: 2, borderRadius: 3, boxShadow: 6 }}>
+      <Card 
+        sx={{ 
+          width: "100%", 
+          p: { xs: 3, md: 4 }, 
+          borderRadius: '8px', 
+          backgroundColor: '#fff',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        }}
+      >
         <CardHeader
-          title="ECHOSHAPE SUBSCRIPTION"
-          subheader={`Subscribe for ${amount} THB`}
-          titleTypographyProps={{ align: "center", fontWeight: "bold" }}
-          subheaderTypographyProps={{ align: "center" }}
+          title="Payment Method"
+          titleTypographyProps={{ 
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            color: '#0a2540',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          }}
+          sx={{ pb: 2 }}
         />
-        <CardContent>
-          <Box textAlign="center" mb={3}>
-            <Typography variant="body2" color="text.secondary">
-              เลือกวิธีการชำระเงิน
+        <CardContent sx={{ pt: 0 }}>
+          <Box mb={3}>
+            <Typography 
+              variant="body2" 
+              sx={{
+                color: '#425466',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                fontSize: '0.875rem',
+                mb: 2,
+              }}
+            >
+              Select payment method
             </Typography>
             <ToggleButtonGroup
               color="primary"
               value={paymentMethod}
               exclusive
               onChange={(_, val) => val && setPaymentMethod(val)}
-              sx={{ mt: 1 }}
+              fullWidth
+              sx={{ 
+                '& .MuiToggleButton-root': {
+                  color: '#425466',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  fontWeight: 500,
+                  borderColor: '#e0e6ed',
+                  textTransform: 'none',
+                  py: 1.5,
+                  '&.Mui-selected': {
+                    backgroundColor: '#635bff',
+                    color: '#fff',
+                    borderColor: '#635bff',
+                    '&:hover': {
+                      backgroundColor: '#5851ea',
+                    },
+                  },
+                  '&:hover': {
+                    backgroundColor: '#f6f9fc',
+                    borderColor: '#cbd5e0',
+                  },
+                },
+              }}
             >
-              <ToggleButton value="card">บัตรเครดิต / เดบิต</ToggleButton>
+              <ToggleButton value="card">Credit / Debit Card</ToggleButton>
               <ToggleButton value="promptpay">PromptPay</ToggleButton>
             </ToggleButtonGroup>
           </Box>
@@ -151,56 +192,220 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
             {paymentMethod === "card" && (
               <Box>
                 <FormControl fullWidth margin="normal">
-                  <TextField id="name" label="Cardholder Name" required />
+                  <TextField 
+                    id="name" 
+                    label="Cardholder Name" 
+                    required
+                    placeholder="John Doe"
+                    sx={{
+                      '& .MuiInputLabel-root': {
+                        color: '#425466',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        color: '#0a2540',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        backgroundColor: '#fff',
+                        '& fieldset': {
+                          borderColor: '#e0e6ed',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e0',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#635bff',
+                        },
+                      },
+                    }}
+                  />
                 </FormControl>
                 <FormControl fullWidth margin="normal">
-                  <TextField id="number" label="Card Number" required />
+                  <TextField 
+                    id="number" 
+                    label="Card Number" 
+                    required
+                    placeholder="1234 5678 9012 3456"
+                    sx={{
+                      '& .MuiInputLabel-root': {
+                        color: '#425466',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      },
+                      '& .MuiOutlinedInput-root': {
+                        color: '#0a2540',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        backgroundColor: '#fff',
+                        '& fieldset': {
+                          borderColor: '#e0e6ed',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e0',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#635bff',
+                        },
+                      },
+                    }}
+                  />
                 </FormControl>
-                <Grid container spacing={2}>
-                  <Grid size={4}>
-                    <TextField id="exp_month" label="MM" required />
+                <Grid container component="div" spacing={2}>
+                  <Grid item component="div" xs={4}>
+                    <TextField 
+                      id="exp_month" 
+                      label="MM" 
+                      required
+                      placeholder="12"
+                      sx={{
+                        '& .MuiInputLabel-root': {
+                          color: '#425466',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          color: '#0a2540',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          backgroundColor: '#fff',
+                          '& fieldset': {
+                            borderColor: '#e0e6ed',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#cbd5e0',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#635bff',
+                          },
+                        },
+                      }}
+                    />
                   </Grid>
-                  <Grid size={4}>
-                    <TextField id="exp_year" label="YY" required />
+                  <Grid item component="div" xs={4}>
+                    <TextField 
+                      id="exp_year" 
+                      label="YY" 
+                      required
+                      placeholder="25"
+                      sx={{
+                        '& .MuiInputLabel-root': {
+                          color: '#425466',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          color: '#0a2540',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          backgroundColor: '#fff',
+                          '& fieldset': {
+                            borderColor: '#e0e6ed',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#cbd5e0',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#635bff',
+                          },
+                        },
+                      }}
+                    />
                   </Grid>
-                  <Grid size={4}>
-                    <TextField id="cvc" label="CVC" required />
+                  <Grid item component="div" xs={4}>
+                    <TextField 
+                      id="cvc" 
+                      label="CVC" 
+                      required
+                      placeholder="123"
+                      sx={{
+                        '& .MuiInputLabel-root': {
+                          color: '#425466',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          color: '#0a2540',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          backgroundColor: '#fff',
+                          '& fieldset': {
+                            borderColor: '#e0e6ed',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#cbd5e0',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#635bff',
+                          },
+                        },
+                      }}
+                    />
                   </Grid>
                 </Grid>
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
-                  sx={{ mt: 3, py: 1.5, fontWeight: "bold" }}
+                  sx={{ 
+                    mt: 3, 
+                    py: 1.75,
+                    backgroundColor: '#635bff',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    "&:hover": {
+                      backgroundColor: '#5851ea',
+                      boxShadow: '0 4px 12px rgba(99,91,255,0.3)',
+                    },
+                  }}
                 >
-                  Subscribe {amount} THB
+                  Pay ${amount}
                 </Button>
               </Box>
             )}
 
             {paymentMethod === "promptpay" && (
               <Box textAlign="center" my={3}>
-                <Typography variant="body1" gutterBottom>
-                  สแกน QR เพื่อชำระ {amount} THB
+                <Typography 
+                  variant="body1" 
+                  gutterBottom
+                  sx={{
+                    color: '#425466',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontWeight: 500,
+                    mb: 3,
+                  }}
+                >
+                  Scan QR to pay ${amount}
                 </Typography>
                 <Box
                   sx={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 2,
+                    width: 250,
+                    height: 250,
+                    borderRadius: '8px',
                     mx: "auto",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: qrUrl ? "transparent" : "#eee",
+                    bgcolor: qrUrl ? "transparent" : "#f6f9fc",
+                    border: qrUrl ? 'none' : '2px dashed #e0e6ed',
+                    mb: 3,
                   }}
                 >
                   {qrUrl ? (
-                    <img src={qrUrl} alt="PromptPay QR" style={{ width: 200, height: 200 }} />
+                    <img src={qrUrl} alt="PromptPay QR" style={{ width: 250, height: 250, borderRadius: '8px' }} />
                   ) : loading ? (
-                    <Typography variant="caption">กำลังสร้าง QR...</Typography>
+                    <Typography 
+                      variant="body2"
+                      sx={{
+                        color: '#425466',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      }}
+                    >
+                      Generating QR...
+                    </Typography>
                   ) : (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography 
+                      variant="body2"
+                      sx={{
+                        color: '#8898aa',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      }}
+                    >
                       QR CODE
                     </Typography>
                   )}
@@ -209,9 +414,22 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
                   type="submit"
                   variant="contained"
                   fullWidth
-                  sx={{ mt: 3, py: 1.5, fontWeight: "bold" }}
+                  sx={{ 
+                    py: 1.75,
+                    backgroundColor: '#635bff',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    borderRadius: '6px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    "&:hover": {
+                      backgroundColor: '#5851ea',
+                      boxShadow: '0 4px 12px rgba(99,91,255,0.3)',
+                    },
+                  }}
                 >
-                  Generate QR
+                  Generate QR Code
                 </Button>
               </Box>
             )}

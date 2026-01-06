@@ -4,9 +4,9 @@ import AudioRecorder from '../components/AudioRecord'
 import AudioUpload from '../components/AudioUpload'
 import ImageComponent from '../components/Images'
 import EmotionBar from '../components/Emotion'
+import Cookies from 'js-cookie'
 
-
-// interface สำหรับ subscription จาก backend
+// Interface for subscription from backend
 interface UserSubscription {
   hasSubscription: boolean
   usedThisMonth: number
@@ -27,8 +27,11 @@ const Function: React.FC = () => {
     async function fetchSubscription() {
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/me`, {
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          },
           credentials: 'include',
-        })
+      })
         if (!res.ok) throw new Error('Failed to fetch subscription')
         const data = await res.json()
         setSubscription(data)
@@ -44,18 +47,19 @@ const Function: React.FC = () => {
   }
 
   const handleGenerate = async (data: any) => {
-    console.log("data", data)
     setLoading(true)
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/generate-image`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' ,
+          'Authorization': `Bearer ${Cookies.get('access_token')}`,
+        },
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: data.image, amount: 0 }),
+        body: JSON.stringify({ imageUrl: data.url, amount: 0 }),
       })
       const resData = await res.json()
       if (!res.ok) {
-        alert(resData.message || 'เกิดข้อผิดพลาด')
+        alert(resData.message || 'An error occurred')
         return
       }
 
@@ -66,22 +70,63 @@ const Function: React.FC = () => {
       }))
     } catch (err) {
       console.error(err)
-      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ server')
+      alert('Error connecting to server')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Box sx={{ marginTop: '15px', paddingInline: '11vw', width: '78vw' }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 3, color: '#fff', fontFamily: 'Bebas Neue' }}>
-        Record or upload an audio file to analyze and generate AI image
-      </Typography>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'radial-gradient(circle at 20% 20%, rgba(135,0,73,0.25), transparent 35%), radial-gradient(circle at 80% 0%, rgba(0,62,135,0.35), transparent 30%), linear-gradient(135deg, #05070d 0%, #0d0f1a 60%, #0a0c13 100%)',
+        color: '#fff',
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          px: { xs: 2, md: '11vw' },
+          py: { xs: 6, md: 10 },
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
+        <Typography
+          sx={{
+            textAlign: 'left',
+            fontSize: { xs: '8vw', md: '3.5vw' },
+            fontFamily: 'Bebas Neue, sans-serif',
+            letterSpacing: { xs: '2px', md: '3px' },
+            lineHeight: 1.1,
+            fontWeight: 400,
+            textTransform: 'uppercase',
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
+            marginBottom: 2,
+          }}
+        >
+          Record or upload an audio file to analyze and generate AI image
+        </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
         {/* LEFT SIDE - Tabs */}
         <Box sx={{ width: { xs: '100%', md: '60%' } }}>
-          <Paper elevation={6} sx={{ backgroundColor: '#ffffff10', backdropFilter: 'blur(10px)', borderRadius: 2, overflow: 'hidden', paddingBottom: 2 }}>
+          <Paper 
+            elevation={6} 
+            sx={{ 
+              backgroundColor: 'rgba(255,255,255,0.05)', 
+              backdropFilter: 'blur(20px)', 
+              borderRadius: 3, 
+              overflow: 'hidden', 
+              paddingBottom: 2,
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+            }}
+          >
             <Tabs
               value={tabIndex}
               onChange={handleTabChange}
@@ -89,7 +134,20 @@ const Function: React.FC = () => {
               textColor="inherit"
               variant="fullWidth"
               centered
-              sx={{ color: 'white', backgroundColor: 'rgba(0,0,0,0.4)', borderBottom: '1px solid rgba(255,255,255,0.2)' }}
+              sx={{ 
+                color: 'white', 
+                backgroundColor: 'rgba(0,0,0,0.3)', 
+                borderBottom: '1px solid rgba(255,255,255,0.15)',
+                '& .MuiTab-root': {
+                  fontFamily: 'Bebas Neue, sans-serif',
+                  fontSize: '1.1rem',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  fontWeight: 400,
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                },
+              }}
             >
               <Tab label="Record Audio" />
               <Tab label="Upload Audio" />
@@ -100,25 +158,83 @@ const Function: React.FC = () => {
               {tabIndex === 1 && <AudioUpload onResult={handleGenerate} disabled={loading} />}
             </Box>
           </Paper>
-          <Typography sx={{ mt: 2, color: '#fff', fontFamily: 'Bebas Neue', fontSize: '1rem' }}>
-            คุณมีสิทธิ์สร้างภาพได้สูงสุด {subscription.maxGenerate} ภาพต่อเดือน
+          <Typography 
+            sx={{ 
+              mt: 2, 
+              color: '#dfe7ff', 
+              fontFamily: 'Poppins, sans-serif', 
+              fontSize: '0.95rem',
+              fontWeight: 300,
+              letterSpacing: '0.3px',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+            }}
+          >
+            You can generate up to {subscription.maxGenerate} images per month
           </Typography>
-          <Typography sx={{ color: '#fff', fontFamily: 'Bebas Neue', fontSize: '1rem' }}>
-            ภาพที่ใช้ไปแล้ว: {subscription.usedThisMonth} ภาพ
+          <Typography 
+            sx={{ 
+              color: '#dfe7ff', 
+              fontFamily: 'Poppins, sans-serif', 
+              fontSize: '0.95rem',
+              fontWeight: 300,
+              letterSpacing: '0.3px',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+            }}
+          >
+            Images used: {subscription.usedThisMonth} images
           </Typography>
-          {loading && <Typography sx={{ color: '#fff', fontFamily: 'Bebas Neue', fontSize: '1rem' }}>
-            กำลังประมวลผล... กรุณารอสักครู่
-          </Typography>}
+          {loading && (
+            <Typography 
+              sx={{ 
+                color: '#dfe7ff', 
+                fontFamily: 'Poppins, sans-serif', 
+                fontSize: '0.95rem',
+                fontWeight: 300,
+                letterSpacing: '0.3px',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+              }}
+            >
+              Processing... Please wait
+            </Typography>
+          )}
         </Box>
 
         {/* RIGHT SIDE - Result */}
-        <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', borderRadius: '10px', width: { xs: '100%', md: '40%' }, height: '100%' }}>
+        <Box 
+          sx={{ 
+            backgroundColor: 'rgba(255,255,255,0.05)', 
+            backdropFilter: 'blur(20px)',
+            borderRadius: 3, 
+            width: { xs: '100%', md: '40%' }, 
+            height: '100%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+            overflow: 'hidden',
+          }}
+        >
           {result ? (
             <>
-              <Typography variant="h5" sx={{ mt: 2, ml: 2, fontWeight: 'bold', marginBottom: 3, color: '#fff' }}>
+              <Typography 
+                sx={{ 
+                  mt: 2, 
+                  ml: 2, 
+                  fontWeight: 400, 
+                  marginBottom: 3, 
+                  color: '#fff',
+                  fontFamily: 'Bebas Neue, sans-serif',
+                  fontSize: '1.5rem',
+                  letterSpacing: '2px',
+                  textTransform: 'uppercase',
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                }}
+              >
                 Analysis Results
               </Typography>
-              <ImageComponent height="240px" width="100%" src={result.image} alt="Generated" title="" />
+              <ImageComponent height="240px" width="100%" src={result.image} alt="Generated" title=""/>
               <Box sx={{ mt: 4, marginInline: '10px' }}>
                 <EmotionBar emoji="😠" emotion="Anger" value={result.probabilities.anger * 100} color="#d32f2f" />
                 <EmotionBar emoji="😤" emotion="Frustration" value={result.probabilities.frustration * 100} color="#ff9800" />
@@ -126,14 +242,40 @@ const Function: React.FC = () => {
                 <EmotionBar emoji="😐" emotion="Neutral" value={result.probabilities.neutral * 100} color="#9e9e9e" />
                 <EmotionBar emoji="😢" emotion="Sadness" value={result.probabilities.sadness * 100} color="#1565c0" />
               </Box>
-              <Typography sx={{ mt: 2, ml: 2, color: '#fff', fontFamily: 'Bebas Neue', fontSize: '1rem' }}>
-                ภาพที่ใช้ไปแล้ว: {subscription.usedThisMonth} / {subscription.maxGenerate} ภาพ
+              <Typography 
+                sx={{ 
+                  mt: 2, 
+                  ml: 2, 
+                  color: '#dfe7ff', 
+                  fontFamily: 'Poppins, sans-serif', 
+                  fontSize: '0.95rem',
+                  fontWeight: 300,
+                  letterSpacing: '0.3px',
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                }}
+              >
+                Images used: {subscription.usedThisMonth} / {subscription.maxGenerate} images
               </Typography>
             </>
           ) : (
-            <Typography sx={{ p: 2, color: 'white', fontFamily: 'Bebas Neue', fontSize: '1.1rem' }}>No result yet.</Typography>
+            <Typography 
+              sx={{ 
+                p: 2, 
+                color: '#dfe7ff', 
+                fontFamily: 'Poppins, sans-serif', 
+                fontSize: '1rem',
+                fontWeight: 300,
+                letterSpacing: '0.3px',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+              }}
+            >
+              No result yet.
+            </Typography>
           )}
         </Box>
+      </Box>
       </Box>
     </Box>
   )
