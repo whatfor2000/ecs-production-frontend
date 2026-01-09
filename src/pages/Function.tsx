@@ -32,12 +32,8 @@ const Function: React.FC = () => {
             'Authorization': `Bearer ${Cookies.get('access_token')}`,
           },
           credentials: 'include',
-<<<<<<< HEAD
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
-=======
-      })
->>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
         if (!res.ok) throw new Error('Failed to fetch subscription')
         const data = await res.json()
         setSubscription(data)
@@ -62,15 +58,7 @@ const Function: React.FC = () => {
           'Authorization': `Bearer ${Cookies.get('access_token')}`,
         },
         credentials: 'include',
-<<<<<<< HEAD
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
         body: JSON.stringify({ imageUrl: data.image, amount: 0 }),
-=======
-        body: JSON.stringify({ imageUrl: data.url, amount: 0 }),
->>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
       })
       const resData = await res.json()
       if (!res.ok) {

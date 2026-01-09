@@ -51,7 +51,6 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchUser() {
       try {
-<<<<<<< HEAD
         // Token is sent automatically via cookies
         const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
@@ -67,17 +66,9 @@ const Home: React.FC = () => {
           console.log("Current cookies:", document.cookie);
           alert("Session expired or invalid. Please login again.");
           navigate("/login");
-=======
-        const token = Cookies.get("access_token");
-        if (!token) {
-          setLoading(false);
->>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
           return;
         }
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "include",
-        });
+        
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
         setUser({
@@ -97,15 +88,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchImages() {
       try {
-<<<<<<< HEAD
         const token = localStorage.getItem('access_token');
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`, {
           withCredentials: true,
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
-=======
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`);
->>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
         setImages(res.data);
 
         const initialLikes: { [key: string]: boolean } = {};
@@ -132,12 +119,9 @@ const Home: React.FC = () => {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         userId: user.id,
         imageId,
-<<<<<<< HEAD
       }, {
         withCredentials: true,
         headers: token ? { Authorization: `Bearer ${token}` } : {}
-=======
->>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
       });
 
       setLikes((prev) => ({ ...prev, [imageId]: res.data.liked }));
