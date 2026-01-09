@@ -5,7 +5,7 @@ interface User {
   id?: string;
   email?: string;
   name?: string;
-  // เพิ่ม field อื่น ๆ ตาม JWT payload
+  // Add other fields according to JWT payload
 }
 
 interface AuthContextType {

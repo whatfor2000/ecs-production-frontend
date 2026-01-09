@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 // NOTE: This component assumes that Material-UI and a custom font like 'Bebas Neue'
 // are loaded in your main application's HTML file or theme configuration.
@@ -26,7 +27,7 @@ const theme = createTheme({
 });
 
 const Login = () => {
-    // Cookie will be set by backend via Set-Cookie header
+    const [, setCookie] = useCookies(['access_token']);
     const navigate = useNavigate()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -34,7 +35,7 @@ const Login = () => {
     const [message, setMessage] = useState('');
 
     const handleFacebookLogin = () => {
-        // redirect ไป backend
+        // Redirect to backend
         window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/facebook`;
     };
 
@@ -46,7 +47,6 @@ const Login = () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -57,12 +57,18 @@ const Login = () => {
 
             if (response.ok) {
                 if (data.success) {
+<<<<<<< HEAD
                     console.log('Login response:', data);
                     console.log('Cookies after login:', document.cookie);
                     // Cookie is automatically set by backend via Set-Cookie header
                     if (data.access_token) {
                         localStorage.setItem('access_token', data.access_token);
                     }
+=======
+                    console.log(data);
+                    // sessionStorage.setItem("access_token", data.access_token);
+                    setCookie('access_token', data.access_token,);
+>>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
                     setMessage('Login successful!');
                     // You would typically redirect the user here or update state
                     setTimeout(() => {
@@ -73,7 +79,6 @@ const Login = () => {
                     setMessage(`Login failed: ${data.message || 'Unknown error'}`);
                 }
             } else {
-                console.error('Login failed:', response.status, data);
                 setMessage(`Login failed: ${data.message || 'Invalid credentials'}`);
             }
         } catch (error) {
@@ -88,35 +93,55 @@ const Login = () => {
         <ThemeProvider theme={theme}>
             <Box
                 sx={{
+                    minHeight: '100vh',
+                    background: 'radial-gradient(circle at 20% 20%, rgba(135,0,73,0.25), transparent 35%), radial-gradient(circle at 80% 0%, rgba(0,62,135,0.35), transparent 30%), linear-gradient(135deg, #05070d 0%, #0d0f1a 60%, #0a0c13 100%)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'center',
+                    pt: { xs: 12, md: 16 },
+                    pb: { xs: 4, md: 6 },
+                    px: { xs: 2, md: 4 },
+                }}
+            >
+            <Box
+                sx={{
                     width: '100%',
                     maxWidth: '500px',
-                    p: 4,
-                    bgcolor: 'rgba(55, 65, 81, 0.7)', // Matches bg-gray-800 with opacity
+                    p: { xs: 3, md: 4 },
+                    bgcolor: 'rgba(255, 255, 255, 0.05)',
                     borderRadius: '16px',
-                    boxShadow: 24,
-                    backdropFilter: 'blur(8px)',
+                    boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     color: 'white',
-                    margin: '0 auto'
+                    mx: { xs: 2, md: 0 },
                 }}
             >
                 <Typography
                     variant="h4"
                     component="h2"
                     sx={{
-                        fontWeight: 'bold',
+                        fontWeight: 400,
                         textAlign: 'center',
-                        mb: 3,
-                        fontFamily: 'Bebas Neue',
+                        mb: { xs: 2, md: 3 },
+                        fontFamily: 'Bebas Neue, sans-serif',
+                        fontSize: { xs: '2rem', md: '3rem' },
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        WebkitFontSmoothing: 'antialiased',
+                        MozOsxFontSmoothing: 'grayscale',
                     }}
                 >
                     Log In
                 </Typography>
                 <Box component="form" onSubmit={handleLogin} sx={{ width: '100%', mt: 2 }}>
                     <Box sx={{ mb: 3 }}>
-                        <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontFamily: 'Bebas Neue' }}>
+                        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, fontFamily: 'Poppins, sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>
                             Email
                         </Typography>
                         <TextField
@@ -129,16 +154,17 @@ const Login = () => {
                             InputProps={{
                                 sx: {
                                     color: 'white',
-                                    bgcolor: '#374151', // bg-gray-700
+                                    bgcolor: 'rgba(255, 255, 255, 0.08)',
                                     borderRadius: '8px',
+                                    fontFamily: 'Poppins, sans-serif',
                                     '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
+                                        borderColor: 'rgba(255, 255, 255, 0.15)',
                                     },
                                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
                                     },
                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#3b82f6', // focus:ring-blue-500
+                                        borderColor: '#2b6bff',
                                     },
                                 },
                             }}
@@ -146,7 +172,7 @@ const Login = () => {
                         />
                     </Box>
                     <Box sx={{ mb: 3 }}>
-                        <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontFamily: 'Bebas Neue' }}>
+                        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, fontFamily: 'Poppins, sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>
                             Password
                         </Typography>
                         <TextField
@@ -159,16 +185,17 @@ const Login = () => {
                             InputProps={{
                                 sx: {
                                     color: 'white',
-                                    bgcolor: '#374151', // bg-gray-700
+                                    bgcolor: 'rgba(255, 255, 255, 0.08)',
                                     borderRadius: '8px',
+                                    fontFamily: 'Poppins, sans-serif',
                                     '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
+                                        borderColor: 'rgba(255, 255, 255, 0.15)',
                                     },
                                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                                        borderColor: 'rgba(255, 255, 255, 0.3)',
                                     },
                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#3b82f6', // focus:ring-blue-500
+                                        borderColor: '#2b6bff',
                                     },
                                 },
                             }}
@@ -183,33 +210,82 @@ const Login = () => {
                         sx={{
                             py: 1.5,
                             borderRadius: '25px',
-                            fontWeight: 'bold',
-                            fontFamily: 'Bebas Neue',
-                            boxShadow: 5,
+                            fontWeight: 400,
+                            fontFamily: 'Bebas Neue, sans-serif',
+                            fontSize: '1.1rem',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase',
+                            boxShadow: '0 12px 30px rgba(43,107,255,0.35), inset 0 1px 0 rgba(255,255,255,0.22)',
                             mt: 2,
-                            background: 'linear-gradient(135deg, #003E87, #870049)',
+                            backgroundColor: '#2b6bff',
                             color: 'white',
-                            transition: 'all 0.3s ease',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease',
+                            WebkitFontSmoothing: 'antialiased',
+                            MozOsxFontSmoothing: 'grayscale',
                             '&:hover': {
-                                transform: 'scale(1.05)',
-                                boxShadow: 8,
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 14px 34px rgba(43,107,255,0.5), 0 0 16px rgba(255,255,255,0.32)',
+                                backgroundColor: '#3976ff',
+                                borderColor: 'rgba(255,255,255,0.45)',
                             },
                             '&.Mui-disabled': {
-                                background: '#4b5563',
-                                color: '#9ca3af',
+                                background: 'rgba(255,255,255,0.1)',
+                                color: 'rgba(255,255,255,0.5)',
                             },
                         }}
                     >
                         {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Login'}
                     </Button>
-                    <Button onClick={handleFacebookLogin} style={{ background: "#1877F2", color: "white", padding: '10px', marginTop: '10px', borderRadius: '25px', fontWeight: 'bold', fontFamily: 'Bebas Neue', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease', width: '100%', border: 'none', cursor: 'pointer' }}
+                    
+                    <Box sx={{ display: 'flex', alignItems: 'center', my: 3, width: '100%' }}>
+                        <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(255,255,255,0.2)' }} />
+                        <Typography sx={{ px: 2, color: 'rgba(255,255,255,0.6)', fontFamily: 'Poppins, sans-serif', fontSize: '0.85rem' }}>
+                            OR
+                        </Typography>
+                        <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(255,255,255,0.2)' }} />
+                    </Box>
+
+                    <Button 
+                        onClick={handleFacebookLogin}
+                        fullWidth
+                        variant="contained"
+                        startIcon={
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        }
                         sx={{
-                            transition: 'all 0.3s ease',
+                            py: 1.5,
+                            borderRadius: '25px',
+                            fontWeight: 400,
+                            fontFamily: 'Bebas Neue, sans-serif',
+                            fontSize: '1.1rem',
+                            letterSpacing: '1px',
+                            textTransform: 'uppercase',
+                            backgroundColor: '#1877F2',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            boxShadow: '0 10px 30px rgba(24,119,242,0.35)',
+                            transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease',
+                            WebkitFontSmoothing: 'antialiased',
+                            MozOsxFontSmoothing: 'grayscale',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 1,
                             '&:hover': {
-                                transform: 'scale(1.05)',
-                                boxShadow: 8,
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 14px 34px rgba(24,119,242,0.5), 0 0 16px rgba(255,255,255,0.32)',
+                                backgroundColor: '#2980f2',
+                                borderColor: 'rgba(255,255,255,0.45)',
                             },
-                        }}>
+                            '& .MuiButton-startIcon': {
+                                marginRight: 0,
+                                marginLeft: 0,
+                            },
+                        }}
+                    >
                         Login with Facebook
                     </Button>
                 </Box>
@@ -219,17 +295,31 @@ const Login = () => {
                         sx={{
                             mt: 2,
                             textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: message.startsWith('Login successful') ? 'success.main' : 'error.main',
+                            fontWeight: 500,
+                            fontFamily: 'Poppins, sans-serif',
+                            color: message.startsWith('Login successful') ? '#4ade80' : '#f87171',
                         }}
                     >
                         {message}
                     </Typography>
                 )}
                 <Box mt={3} sx={{ textAlign: 'center' }}>
-                    <Button onClick={() => navigate('/register')} sx={{ color: 'text.secondary' }}>
+                    <Button 
+                        onClick={() => navigate('/register')} 
+                        sx={{ 
+                            color: 'rgba(255,255,255,0.7)',
+                            fontFamily: 'Poppins, sans-serif',
+                            fontSize: '0.9rem',
+                            textTransform: 'none',
+                            '&:hover': {
+                                color: '#fff',
+                                backgroundColor: 'rgba(255,255,255,0.05)',
+                            },
+                        }}
+                    >
                         Don't have an account? register here.
                     </Button>
+                </Box>
                 </Box>
             </Box>
         </ThemeProvider>

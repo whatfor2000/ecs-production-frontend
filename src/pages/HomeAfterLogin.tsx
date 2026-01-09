@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import axios from "axios";
 import {
   Box,
@@ -50,6 +51,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchUser() {
       try {
+<<<<<<< HEAD
         // Token is sent automatically via cookies
         const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
@@ -65,40 +67,45 @@ const Home: React.FC = () => {
           console.log("Current cookies:", document.cookie);
           alert("Session expired or invalid. Please login again.");
           navigate("/login");
+=======
+        const token = Cookies.get("access_token");
+        if (!token) {
+          setLoading(false);
+>>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
           return;
         }
-
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          console.error(`Failed to fetch user: ${res.status}`, errorData);
-          throw new Error(`Failed to fetch user: ${res.status}`);
-        }
-
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
-        console.log("User profile fetched successfully:", data);
         setUser({
           ...data,
           maxGenerate: data.planId === "subscription" ? 50 : 2,
         });
       } catch (err) {
-        console.error("Error fetching user profile:", err);
-        // Don't redirect on network errors, only on auth errors
+        console.error(err);
       } finally {
         setLoading(false);
       }
     }
     fetchUser();
-  }, [navigate]);
+  }, []);
 
   // Fetch images
   useEffect(() => {
     async function fetchImages() {
       try {
+<<<<<<< HEAD
         const token = localStorage.getItem('access_token');
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`, {
           withCredentials: true,
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
+=======
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`);
+>>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
         setImages(res.data);
 
         const initialLikes: { [key: string]: boolean } = {};
@@ -125,9 +132,12 @@ const Home: React.FC = () => {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         userId: user.id,
         imageId,
+<<<<<<< HEAD
       }, {
         withCredentials: true,
         headers: token ? { Authorization: `Bearer ${token}` } : {}
+=======
+>>>>>>> 6c71d2bc8c9dd228fa7fa4e5156a6c9c0f2073ff
       });
 
       setLikes((prev) => ({ ...prev, [imageId]: res.data.liked }));
@@ -137,11 +147,11 @@ const Home: React.FC = () => {
         prevImages.map((img) =>
           img.id === imageId
             ? {
-              ...img,
-              likes: res.data.liked
-                ? [...img.likes, { userId: user.id }]
-                : img.likes.filter((l) => l.userId !== user.id),
-            }
+                ...img,
+                likes: res.data.liked
+                  ? [...img.likes, { userId: user.id }]
+                  : img.likes.filter((l) => l.userId !== user.id),
+              }
             : img
         )
       );
@@ -178,7 +188,12 @@ const Home: React.FC = () => {
         {images.map((img) => (
           <Grid
             key={img.id}
-            size={{ xs: 12, sm: 6, md: 3, lg: 2.4 }}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 3,
+              lg: 2.4
+            }}
             sx={{ display: "flex", justifyContent: "center" }}
           >
             <Box
@@ -246,7 +261,7 @@ const Home: React.FC = () => {
         ))}
       </Grid>
 
-      {/* Modal แสดงภาพเต็ม */}
+      {/* Modal showing full image */}
       <Dialog open={!!selectedImage} onClose={() => setSelectedImage(null)} maxWidth="lg">
         {selectedImage && (
           <img
@@ -260,7 +275,7 @@ const Home: React.FC = () => {
 
       {/* Dialog Share */}
       <Dialog open={shareDialogOpen} onClose={() => setShareDialogOpen(false)}>
-        <DialogTitle>แชร์ภาพนี้</DialogTitle>
+        <DialogTitle>Share this image</DialogTitle>
         <DialogContent
           sx={{
             display: "flex",
@@ -301,7 +316,7 @@ const Home: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar แจ้งว่า Copy แล้ว */}
+      {/* Snackbar notification for copied */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={2000}

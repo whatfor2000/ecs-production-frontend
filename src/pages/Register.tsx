@@ -64,35 +64,55 @@ const Register = () => {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          width: '100%',
-          maxWidth: '500px',
-          p: 4,
-          bgcolor: 'rgba(55, 65, 81, 0.7)',
-          borderRadius: '16px',
-          boxShadow: 24,
-          backdropFilter: 'blur(8px)',
+          minHeight: '100vh',
+          background: 'radial-gradient(circle at 20% 20%, rgba(135,0,73,0.25), transparent 35%), radial-gradient(circle at 80% 0%, rgba(0,62,135,0.35), transparent 30%), linear-gradient(135deg, #05070d 0%, #0d0f1a 60%, #0a0c13 100%)',
+          color: '#fff',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          color: 'white',
-          margin: '0 auto'
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          pt: { xs: 12, md: 16 },
+          pb: { xs: 4, md: 6 },
+          px: { xs: 2, md: 4 },
         }}
       >
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: '500px',
+            p: { xs: 3, md: 4 },
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '16px',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            color: 'white',
+            mx: { xs: 2, md: 0 },
+          }}
+        >
         <Typography
           variant="h4"
           component="h2"
           sx={{
-            fontWeight: 'bold',
+            fontWeight: 400,
             textAlign: 'center',
-            mb: 3,
-            fontFamily: 'Bebas Neue',
+            mb: { xs: 2, md: 3 },
+            fontFamily: 'Bebas Neue, sans-serif',
+            fontSize: { xs: '2rem', md: '3rem' },
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
           }}
         >
           Register
         </Typography>
         <Box component="form" onSubmit={handleRegister} sx={{ width: '100%', mt: 2 }}>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontFamily: 'Bebas Neue' }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, fontFamily: 'Poppins, sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>
               Email
             </Typography>
             <TextField
@@ -105,17 +125,24 @@ const Register = () => {
               InputProps={{
                 sx: {
                   color: 'white',
-                  bgcolor: '#374151',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '8px',
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'transparent' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                  fontFamily: 'Poppins, sans-serif',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#2b6bff',
+                  },
                 },
               }}
             />
           </Box>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontFamily: 'Bebas Neue' }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, fontFamily: 'Poppins, sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>
               Username
             </Typography>
             <TextField
@@ -128,17 +155,24 @@ const Register = () => {
               InputProps={{
                 sx: {
                   color: 'white',
-                  bgcolor: '#374151',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '8px',
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'transparent' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                  fontFamily: 'Poppins, sans-serif',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#2b6bff',
+                  },
                 },
               }}
             />
           </Box>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" sx={{ color: 'text.secondary', mb: 1, fontFamily: 'Bebas Neue' }}>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, fontFamily: 'Poppins, sans-serif', fontSize: '0.95rem', fontWeight: 500 }}>
               Password
             </Typography>
             <TextField
@@ -151,11 +185,18 @@ const Register = () => {
               InputProps={{
                 sx: {
                   color: 'white',
-                  bgcolor: '#374151',
+                  bgcolor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '8px',
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'transparent' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3b82f6' },
+                  fontFamily: 'Poppins, sans-serif',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#2b6bff',
+                  },
                 },
               }}
             />
@@ -168,20 +209,28 @@ const Register = () => {
             sx={{
               py: 1.5,
               borderRadius: '25px',
-              fontWeight: 'bold',
-              fontFamily: 'Bebas Neue',
-              boxShadow: 5,
+              fontWeight: 400,
+              fontFamily: 'Bebas Neue, sans-serif',
+              fontSize: '1.1rem',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              boxShadow: '0 12px 30px rgba(43,107,255,0.35), inset 0 1px 0 rgba(255,255,255,0.22)',
               mt: 2,
-              background: 'linear-gradient(135deg, #003E87, #870049)',
+              backgroundColor: '#2b6bff',
               color: 'white',
-              transition: 'all 0.3s ease',
+              border: '1px solid rgba(255,255,255,0.2)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
               '&:hover': {
-                transform: 'scale(1.05)',
-                boxShadow: 8,
+                transform: 'translateY(-2px)',
+                boxShadow: '0 14px 34px rgba(43,107,255,0.5), 0 0 16px rgba(255,255,255,0.32)',
+                backgroundColor: '#3976ff',
+                borderColor: 'rgba(255,255,255,0.45)',
               },
               '&.Mui-disabled': {
-                background: '#4b5563',
-                color: '#9ca3af',
+                background: 'rgba(255,255,255,0.1)',
+                color: 'rgba(255,255,255,0.5)',
               },
             }}
           >
@@ -194,17 +243,31 @@ const Register = () => {
             sx={{
               mt: 2,
               textAlign: 'center',
-              fontWeight: 'bold',
-              color: message.startsWith('Registration successful') ? 'success.main' : 'error.main',
+              fontWeight: 500,
+              fontFamily: 'Poppins, sans-serif',
+              color: message.startsWith('Registration successful') ? '#4ade80' : '#f87171',
             }}
           >
             {message}
           </Typography>
         )}
         <Box mt={3} sx={{textAlign: 'center'}}>
-          <Button onClick={() => navigate('/login')} sx={{ color: 'text.secondary' }}>
+          <Button 
+            onClick={() => navigate('/login')} 
+            sx={{ 
+              color: 'rgba(255,255,255,0.7)',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '0.9rem',
+              textTransform: 'none',
+              '&:hover': {
+                color: '#fff',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+              },
+            }}
+          >
             Already have an account? Login here.
           </Button>
+        </Box>
         </Box>
       </Box>
     </ThemeProvider>

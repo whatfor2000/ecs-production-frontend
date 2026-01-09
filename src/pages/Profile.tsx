@@ -3,9 +3,10 @@ import {
   Box, Typography, Avatar, Paper,
   LinearProgress, Grid, Button // <<-- Import Button
 } from '@mui/material';
-//import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import ImageDialog from '../components/ImageDialog';
 
+// ... (Interface and other code remain the same)
 interface UserProfile {
   id: string;
   username: string;
@@ -32,14 +33,14 @@ const ProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // Modal state
-  const [, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
 
-  // 1. สถานะ Anonymous Toggle
+  // 1. Anonymous Toggle state
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-  // Token is sent automatically via cookies
-
+  // ... (useEffect, toggleLike, deleteImage code remain the same) 
+  // reply from dev: stop using AI without your brain BRO!!!
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -131,12 +132,13 @@ const ProfilePage: React.FC = () => {
 
   const progress = Math.min((user.usedThisMonth / user.maxGenerate) * 100, 100);
 
-  // ฟังก์ชันสำหรับสลับสถานะ Anonymous
+
+  // Function to toggle Anonymous state
   const toggleAnonymous = () => {
     setIsAnonymous(prev => !prev);
   };
 
-  // ... (โค้ด return)
+  // ... (return code)
   return (
     <Box sx={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', color: '#fff' }}>
       {/* Profile Info */}
@@ -162,7 +164,7 @@ const ProfilePage: React.FC = () => {
             <LinearProgress variant="determinate" value={progress} sx={{ height: 10, borderRadius: 5, mt: 1 }} />
           </Box>
 
-          {/* 2. ปุ่ม Anonymous Toggle (Global setting สำหรับ ImageDialog) */}
+          {/* 2. Anonymous Toggle button (Global setting for ImageDialog) */}
           <Button
             variant="outlined"
             onClick={toggleAnonymous}
@@ -175,7 +177,7 @@ const ProfilePage: React.FC = () => {
           </Button>
         </Box>
       </Paper>
-      {/* Image History Grid */}
+      {/* ... (Image History Grid remain the same) */}
       <Typography variant="h6" sx={{ mb: 2 }}>History</Typography>
       <Grid container spacing={2}>
         {images.map(img => (
@@ -189,15 +191,15 @@ const ProfilePage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-      {/* 3. ส่งสถานะ isAnonymous ไปยัง ImageDialog */}
+      {/* 3. Send isAnonymous state to ImageDialog */}
       <ImageDialog
         selectedImage={selectedImage}
         setSelectedImage={(img) => setSelectedImage(img as any)}
         likes={likes}
         toggleLike={toggleLike}
         deleteImage={deleteImage}
-        isAnonymous={isAnonymous} // <<-- ส่ง prop นี้ไป
-        creatorUsername={user.username} // <<-- ส่งชื่อผู้สร้างไป
+        isAnonymous={isAnonymous} // <<-- Send this prop
+        creatorUsername={user.username} // <<-- Send creator name
       />
     </Box>
   );
