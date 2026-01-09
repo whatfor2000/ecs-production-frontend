@@ -28,9 +28,6 @@ const Function: React.FC = () => {
       try {
         const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/me`, {
-          headers: {
-            'Authorization': `Bearer ${Cookies.get('access_token')}`,
-          },
           credentials: 'include',
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
@@ -54,10 +51,11 @@ const Function: React.FC = () => {
       const token = localStorage.getItem('access_token');
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/generate-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' ,
-          'Authorization': `Bearer ${Cookies.get('access_token')}`,
-        },
         credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ imageUrl: data.image, amount: 0 }),
       })
       const resData = await res.json()
