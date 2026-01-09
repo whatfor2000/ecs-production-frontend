@@ -26,8 +26,10 @@ const Function: React.FC = () => {
   useEffect(() => {
     async function fetchSubscription() {
       try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/me`, {
           credentials: 'include',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
         if (!res.ok) throw new Error('Failed to fetch subscription')
         const data = await res.json()
@@ -47,10 +49,14 @@ const Function: React.FC = () => {
     console.log("data", data)
     setLoading(true)
     try {
+      const token = localStorage.getItem('access_token');
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/generate-image`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ imageUrl: data.image, amount: 0 }),
       })
       const resData = await res.json()

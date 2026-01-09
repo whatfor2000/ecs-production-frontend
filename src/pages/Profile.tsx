@@ -43,8 +43,13 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     async function fetchProfile() {
       try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+             'Content-Type': 'application/json',
+             ...(token ? { Authorization: `Bearer ${token}` } : {})
+          }
         });
         const data = await res.json();
         setUser({
@@ -58,8 +63,13 @@ const ProfilePage: React.FC = () => {
 
     async function fetchImages() {
       try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/me`, {
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+             'Content-Type': 'application/json',
+             ...(token ? { Authorization: `Bearer ${token}` } : {})
+          }
         });
         const data = await res.json();
         setImages(data);
@@ -83,10 +93,14 @@ const ProfilePage: React.FC = () => {
     if (!user?.id) return alert('You must login first!');
 
     try {
+      const token = localStorage.getItem('access_token');
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ userId: user.id, imageId })
       });
       const data = await res.json();
@@ -99,9 +113,11 @@ const ProfilePage: React.FC = () => {
   const deleteImage = async (imageId: string) => {
     if (!window.confirm('Are you sure you want to delete this image?')) return;
     try {
+      const token = localStorage.getItem('access_token');
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/${imageId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        credentials: 'include',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setImages(prev => prev.filter(img => img.id !== imageId));
       if (selectedImage?.id === imageId) setOpenModal(false);

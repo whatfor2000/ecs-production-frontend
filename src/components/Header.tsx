@@ -18,6 +18,7 @@ const Header: React.FC = () => {
     try {
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {}, { withCredentials: true });
       Cookies.remove("access_token");
+      localStorage.removeItem("access_token");
       
       setUser(null);
       navigate("/login");

@@ -27,8 +27,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (window.location.href.indexOf('#_=_') > 0) {
       window.location.href = window.location.href.replace(/#.*/, '');
     }
+    const token = localStorage.getItem('access_token');
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, { withCredentials: true })
+      .get(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, { 
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {} 
+      })
       .then(res => setUser(res.data))
       .catch(() => setUser(null));
   }, []);

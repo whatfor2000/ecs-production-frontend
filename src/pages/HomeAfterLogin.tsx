@@ -51,9 +51,13 @@ const Home: React.FC = () => {
     async function fetchUser() {
       try {
         // Token is sent automatically via cookies
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
           credentials: "include",
-          
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         });
 
         if (res.status === 401) {
@@ -90,8 +94,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchImages() {
       try {
+        const token = localStorage.getItem('access_token');
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`, {
-          withCredentials: true
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         setImages(res.data);
 
@@ -115,11 +121,13 @@ const Home: React.FC = () => {
     }
 
     try {
+      const token = localStorage.getItem('access_token');
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         userId: user.id,
         imageId,
       }, {
-        withCredentials: true
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       setLikes((prev) => ({ ...prev, [imageId]: res.data.liked }));

@@ -79,11 +79,13 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
 
           // ส่ง token ไป backend เพื่อสร้าง subscription
           try {
+            const token = localStorage.getItem('access_token');
             const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/subscribe`, {
               method: "POST",
               credentials: "include",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
               },
               body: JSON.stringify({ token, amount, planId }),
             });
@@ -103,10 +105,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
     if (paymentMethod === "promptpay") {
       setLoading(true);
       try {
+        const token = localStorage.getItem('access_token');
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/omise/promptpay`, {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
           body: JSON.stringify({ amount }),
         });
         const data = await res.json();

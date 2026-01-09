@@ -60,6 +60,9 @@ const Login = () => {
                     console.log('Login response:', data);
                     console.log('Cookies after login:', document.cookie);
                     // Cookie is automatically set by backend via Set-Cookie header
+                    if (data.access_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                    }
                     setMessage('Login successful!');
                     // You would typically redirect the user here or update state
                     setTimeout(() => {
