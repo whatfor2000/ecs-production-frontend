@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface User {
   id?: string;
@@ -23,12 +24,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-
     if (window.location.href.indexOf('#_=_') > 0) {
       window.location.href = window.location.href.replace(/#.*/, '');
     }
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, { withCredentials: true })
+      .get(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          },
+        withCredentials: true
+      })
       .then(res => setUser(res.data))
       .catch(() => setUser(null));
   }, []);

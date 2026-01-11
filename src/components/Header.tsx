@@ -24,7 +24,11 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {}, { 
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          },
+        withCredentials: true });
       Cookies.remove("access_token");
       
       setUser(null);

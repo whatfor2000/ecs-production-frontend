@@ -45,6 +45,9 @@ const ProfilePage: React.FC = () => {
     async function fetchProfile() {
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          },
           credentials: 'include'
         });
         const data = await res.json();
@@ -60,6 +63,9 @@ const ProfilePage: React.FC = () => {
     async function fetchImages() {
       try {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/me`, {
+          headers: {
+            'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          },
           credentials: 'include'
         });
         const data = await res.json();
@@ -85,9 +91,12 @@ const ProfilePage: React.FC = () => {
 
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('access_token')}`,
+          'Content-Type': 'application/json'
+        },
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, imageId })
       });
       const data = await res.json();
@@ -101,6 +110,9 @@ const ProfilePage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this image?')) return;
     try {
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/${imageId}`, {
+        headers: {
+          'Authorization': `Bearer ${Cookies.get('access_token')}`,
+        },
         method: 'DELETE',
         credentials: 'include'
       });
