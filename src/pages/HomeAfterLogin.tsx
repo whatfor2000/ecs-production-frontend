@@ -51,15 +51,24 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const token = Cookies.get("access_token");
-        if (!token) {
-          setLoading(false);
+        // Token is sent automatically via cookies
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/profile`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (res.status === 401) {
+          console.error("Unauthorized: Cookie not found or invalid");
+          console.log("Current cookies:", document.cookie);
+          alert("Session expired or invalid. Please login again.");
+          navigate("/login");
           return;
         }
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "include",
-        });
+        
         if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
         const data = await res.json();
         setUser({
@@ -79,7 +88,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     async function fetchImages() {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`);
+        const token = localStorage.getItem('access_token');
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/images`, {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
         setImages(res.data);
 
         const initialLikes: { [key: string]: boolean } = {};
@@ -102,9 +115,13 @@ const Home: React.FC = () => {
     }
 
     try {
+      const token = localStorage.getItem('access_token');
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/likes/toggle`, {
         userId: user.id,
         imageId,
+      }, {
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       setLikes((prev) => ({ ...prev, [imageId]: res.data.liked }));

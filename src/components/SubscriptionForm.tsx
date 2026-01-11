@@ -79,12 +79,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
 
           // Send token to backend to create subscription
           try {
-            const res = await fetch("http://localhost:3000/subscriptions/subscribe", {
+            const token = localStorage.getItem('access_token');
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/subscriptions/subscribe`, {
               method: "POST",
-              headers: { 
+              credentials: "include",
+              headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${Cookies.get('access_token')}`
-               },
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
               body: JSON.stringify({ token, amount, planId }),
             });
 
@@ -103,9 +105,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ amount, planId }) =
     if (paymentMethod === "promptpay") {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:3000/omise/promptpay", {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/omise/promptpay`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          headers: { 
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
           body: JSON.stringify({ amount }),
         });
         const data = await res.json();

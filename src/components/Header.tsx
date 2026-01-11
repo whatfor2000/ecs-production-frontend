@@ -30,6 +30,7 @@ const Header: React.FC = () => {
           },
         withCredentials: true });
       Cookies.remove("access_token");
+      localStorage.removeItem("access_token");
       
       setUser(null);
       navigate("/login");
