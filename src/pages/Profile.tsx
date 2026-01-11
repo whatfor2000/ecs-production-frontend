@@ -118,9 +118,6 @@ const ProfilePage: React.FC = () => {
     try {
       const token = localStorage.getItem('access_token');
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/images/${imageId}`, {
-        headers: {
-          'Authorization': `Bearer ${Cookies.get('access_token')}`,
-        },
         method: 'DELETE',
         credentials: 'include',
         headers: token ? { Authorization: `Bearer ${token}` } : {}
