@@ -15,8 +15,8 @@ const Header: React.FC = () => {
   if (!auth) return null; // Prevent context null
   const { user, setUser } = auth;
 
-  // const isLogin = !!user;
-  const isLogin = false;
+  const isLogin = !!user;
+  // const isLogin = false;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
