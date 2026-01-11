@@ -30,7 +30,7 @@ const AudioUpload: React.FC<Props> = ({ onResult, disabled }) => {
     formData.append('transcript', '');
 
     try {
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
